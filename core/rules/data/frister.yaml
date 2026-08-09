@@ -1,0 +1,31 @@
+# FOA kap. 20 — Frister
+# Gyldighetsperiode: 2017-01-01 –
+---
+minimumfrister:
+  - id: FOA-20-1
+    prosedyre: "ÅPEN_ANBUDSKONKURRANSE"
+    frist_dager: 35
+    paragraf: "FOA § 20-1"
+    beskrivelse: "Minimum tilbudsfrist for åpen anbudskonkurranse"
+    gyldighet_fra: "2017-01-01"
+
+  - id: FOA-20-2
+    prosedyre: "BEGRENSET_ANBUDSKONKURRANSE"
+    frist_dager: 30
+    paragraf: "FOA § 20-2"
+    beskrivelse: "Minimum tilbudsfrist for begrenset anbudskonkurranse"
+    gyldighet_fra: "2017-01-01"
+
+  - id: FOA-20-3
+    prosedyre: "KONKURRANSE_MED_FORHANDLING"
+    frist_dager: 25
+    paragraf: "FOA § 20-3"
+    beskrivelse: "Minimum tilbudsfrist for konkurranse med forhandling"
+    gyldighet_fra: "2017-01-01"
+
+  - id: FOA-20-4
+    prosedyre: "HASTETILFELLE"
+    frist_dager: 15
+    paragraf: "FOA § 20-4"
+    beskrivelse: "Forkortet frist ved tvingende hastetilfeller"
+    gyldighet_fra: "2017-01-01"

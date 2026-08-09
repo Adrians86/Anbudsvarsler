@@ -1,0 +1,29 @@
+# FOA kap. 18 — Tildelingskriterier
+# Gyldighetsperiode: 2017-01-01 –
+---
+regler:
+  - id: FOA-18-1
+    tittel: "Beste forhold mellom pris og kvalitet"
+    paragraf: "FOA § 18-1"
+    beskrivelse: >
+      Kontrakt skal tildeles på grunnlag av det beste forholdet mellom pris
+      og kvalitet, lavest pris, eller laveste kostnad.
+    gyldighet_fra: "2017-01-01"
+
+  - id: FOA-18-2
+    tittel: "Tildelingskriterier – krav"
+    paragraf: "FOA § 18-2"
+    beskrivelse: >
+      Tildelingskriteriene skal ha tilknytning til kontraktsgjenstanden.
+      De kan gjelde kvalitet, pris, teknisk verdi, estetiske og funksjonelle
+      egenskaper, tilgjengelighet, universell utforming, sosiale og miljømessige
+      egenskaper, leveringsbetingelser mv.
+    gyldighet_fra: "2017-01-01"
+
+  - id: FOA-18-3
+    tittel: "Vekting av kriterier"
+    paragraf: "FOA § 18-3"
+    beskrivelse: >
+      Oppdragsgiver skal fastsette vektingen av tildelingskriteriene,
+      eventuelt i prioritert rekkefølge.
+    gyldighet_fra: "2017-01-01"

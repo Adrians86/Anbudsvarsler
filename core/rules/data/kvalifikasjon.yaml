@@ -1,0 +1,43 @@
+# FOA kap. 16 — Kvalifikasjonskrav
+# Gyldighetsperiode: 2017-01-01 –
+---
+regler:
+  - id: FOA-16-1
+    tittel: "Registrering i foretaksregister"
+    paragraf: "FOA § 16-2"
+    beskrivelse: >
+      Leverandører skal være registrert i foretaksregisteret eller tilsvarende
+      register i det land leverandøren er etablert.
+    krav_type: "OBLIGATORISK"
+    dokumentasjon: ["firmaattest", "registerutskrift"]
+    gyldighet_fra: "2017-01-01"
+
+  - id: FOA-16-2
+    tittel: "Skatt og avgift"
+    paragraf: "FOA § 16-3"
+    beskrivelse: >
+      Leverandøren skal ha oppfylt sine forpliktelser vedrørende betaling
+      av skatter og avgifter i Norge eller det land leverandøren er etablert.
+    krav_type: "OBLIGATORISK"
+    dokumentasjon: ["skatteattest"]
+    gyldighet_fra: "2017-01-01"
+
+  - id: FOA-16-3
+    tittel: "Teknisk og faglig kapasitet"
+    paragraf: "FOA § 16-6"
+    beskrivelse: >
+      Oppdragsgivere kan stille krav til leverandørenes tekniske og faglige
+      kapasitet, herunder referanser, faglig kompetanse og kapasitet.
+    krav_type: "FRIVILLIG"
+    dokumentasjon: ["referanseliste", "CV"]
+    gyldighet_fra: "2017-01-01"
+
+  - id: FOA-16-4
+    tittel: "Finansiell og økonomisk kapasitet"
+    paragraf: "FOA § 16-5"
+    beskrivelse: >
+      Oppdragsgivere kan stille krav til leverandørens finansielle og
+      økonomiske stilling.
+    krav_type: "FRIVILLIG"
+    dokumentasjon: ["årsregnskap", "bankgaranti"]
+    gyldighet_fra: "2017-01-01"

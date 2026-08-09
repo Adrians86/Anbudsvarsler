@@ -1,0 +1,57 @@
+# FOA kap. 17 — Egenerklæring (ESPD)
+# Gyldighetsperiode: 2017-01-01 –
+---
+obligatoriske_avvisningsgrunner:
+  - id: FOA-17-1
+    tittel: "Deltakelse i kriminell organisasjon"
+    paragraf: "FOA § 17-1 a"
+    beskrivelse: "Straffedomfellelse for deltakelse i kriminell organisasjon"
+    gyldighet_fra: "2017-01-01"
+
+  - id: FOA-17-2
+    tittel: "Korrupsjon"
+    paragraf: "FOA § 17-1 b"
+    beskrivelse: "Straffedomfellelse for korrupsjon"
+    gyldighet_fra: "2017-01-01"
+
+  - id: FOA-17-3
+    tittel: "Hvitvasking"
+    paragraf: "FOA § 17-1 c"
+    beskrivelse: "Straffedomfellelse for hvitvasking eller terrorfinansiering"
+    gyldighet_fra: "2017-01-01"
+
+  - id: FOA-17-4
+    tittel: "Bedrageri"
+    paragraf: "FOA § 17-1 d"
+    beskrivelse: "Straffedomfellelse for bedrageri"
+    gyldighet_fra: "2017-01-01"
+
+  - id: FOA-17-5
+    tittel: "Terrorisme"
+    paragraf: "FOA § 17-1 e"
+    beskrivelse: "Straffedomfellelse for terrorhandlinger"
+    gyldighet_fra: "2017-01-01"
+
+  - id: FOA-17-6
+    tittel: "Barnearbeid"
+    paragraf: "FOA § 17-1 f"
+    beskrivelse: "Straffedomfellelse for barnearbeid eller menneskehandel"
+    gyldighet_fra: "2017-01-01"
+
+frivillige_avvisningsgrunner:
+  - id: FOA-17-7
+    tittel: "Konkurs"
+    paragraf: "FOA § 17-2 a"
+    beskrivelse: "Leverandøren er konkurs, under gjeldsforhandling eller avvikling"
+    gyldighet_fra: "2017-01-01"
+
+  - id: FOA-17-8
+    tittel: "Skattegjeld"
+    paragraf: "FOA § 17-2 b"
+    beskrivelse: "Vesentlig mislighold av skatte- og avgiftsforpliktelser"
+    gyldighet_fra: "2017-01-01"
+
+dokumentasjon:
+  - type: "ESPD"
+    beskrivelse: "Egenerklæring om leverandørens personlige forhold (ESPD)"
+    format: "XML/HTML"
