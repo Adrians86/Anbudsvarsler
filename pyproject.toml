@@ -24,5 +24,8 @@ pythonpath = ["."]
 where = ["."]
 include = ["core*", "leverandor*", "app*", "ci*"]
 
+[tool.poetry]
+package-mode = false
+
 [tool.ruff]
 line-length = 100
