@@ -1,4 +1,5 @@
 import httpx
+import logging
 from datetime import datetime, timedelta
 
 from leverandor.api.models import Kunngjoring
@@ -12,7 +13,6 @@ def fetch_recent_ted(days_back: int = 2, cpv_codes: list[str] | None = None) -> 
     query_parts = [
         "ND-CountryCode=NOR",
         f"ND-PublicationDate>={from_date}",
-        "ND-NoticeType=CN",
     ]
     if cpv_codes:
         cpv_filter = " OR ".join([f"ND-MainCpvCode={c}" for c in cpv_codes[:10]])
@@ -36,8 +36,12 @@ def fetch_recent_ted(days_back: int = 2, cpv_codes: list[str] | None = None) -> 
     results = []
     with httpx.Client(timeout=30) as client:
         while True:
-            resp = client.post(TED_SEARCH_URL, json=payload)
-            resp.raise_for_status()
+            try:
+                resp = client.post(TED_SEARCH_URL, json=payload)
+                resp.raise_for_status()
+            except httpx.HTTPStatusError as e:
+                logging.warning(f"TED API error {e.response.status_code}: {e.response.text[:500]}")
+                return results
             data = resp.json()
             for notice in data.get("notices", []):
                 results.append(_map_ted_notice(notice))
