@@ -31,29 +31,62 @@ def inject_css():
         :root {{
             --navy: {NAVY};
             --gold: {GOLD};
+            --light-bg: {LIGHT_BG};
         }}
+
+        /* Top bar */
         .stApp header {{
             background-color: {NAVY} !important;
         }}
+
+        /* Sidebar nav accent */
+        [data-testid="stSidebarNav"] {{
+            border-top: 3px solid {GOLD};
+        }}
+        [data-testid="stSidebarNav"] a[aria-current="page"] {{
+            background: rgba(201, 168, 76, 0.15);
+            border-left: 3px solid {GOLD};
+        }}
+
+        /* Headings */
         h1, h2, h3 {{
             color: {NAVY};
         }}
+
+        /* Section header bar */
         .section-header {{
-            background: {NAVY};
+            background: linear-gradient(90deg, {NAVY} 0%, #163264 100%);
             color: white;
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1.2rem;
             border-radius: 6px;
-            margin-bottom: 1rem;
-            font-weight: 600;
+            margin-bottom: 1.2rem;
+            font-weight: 700;
+            font-size: 1.15rem;
+            letter-spacing: 0.01em;
+            border-left: 4px solid {GOLD};
         }}
+
+        /* Eyebrow label above section headers */
+        .eyebrow {{
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: {GOLD};
+            margin-bottom: 0.15rem;
+        }}
+
+        /* Status pills */
         .status-pill {{
             display: inline-block;
             padding: 2px 10px;
             border-radius: 12px;
             color: white;
-            font-size: 0.8em;
+            font-size: 0.78em;
             font-weight: 600;
         }}
+
+        /* GO/NO-GO badges */
         .resultat-badge {{
             display: inline-block;
             padding: 4px 14px;
@@ -62,14 +95,40 @@ def inject_css():
             font-weight: 700;
             font-size: 1em;
         }}
+
+        /* Card containers */
+        [data-testid="stVerticalBlockBorderWrapper"] {{
+            border-radius: 8px !important;
+            border-color: #DDE3ED !important;
+        }}
+
+        /* Primary buttons */
+        .stButton > button[kind="primary"] {{
+            background: {NAVY};
+            border: none;
+            border-bottom: 2px solid {GOLD};
+        }}
+        .stButton > button[kind="primary"]:hover {{
+            background: #163264;
+        }}
+
+        /* Metric value color */
+        [data-testid="stMetricValue"] {{
+            color: {NAVY};
+            font-weight: 700;
+        }}
         </style>
         """,
         unsafe_allow_html=True,
     )
 
 
-def section_header(text: str):
-    st.markdown(f'<div class="section-header">{text}</div>', unsafe_allow_html=True)
+def section_header(text: str, eyebrow: str = ""):
+    eye = f'<div class="eyebrow">{eyebrow}</div>' if eyebrow else ""
+    st.markdown(
+        f'{eye}<div class="section-header">{text}</div>',
+        unsafe_allow_html=True,
+    )
 
 
 def status_pill(status: str) -> str:
