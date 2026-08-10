@@ -8,21 +8,13 @@ import httpx
 import streamlit as st
 
 from app.config import API_BASE_URL as API_BASE
+from app.cpv_data import CPV_GRUPPER, alle_oppslag, cpv_kode as _cpv_kode
 from app.theme import inject_css, section_header
 
 st.set_page_config(page_title="Min profil | Anbudsvarsler", page_icon="🏢", layout="wide")
 inject_css()
 
-VANLIGE_CPV = {
-    "72000000 — IT-tjenester": "72000000",
-    "45000000 — Bygge- og anleggsarbeid": "45000000",
-    "71000000 — Arkitekt-, ingeniør- og planleggingstjenester": "71000000",
-    "80000000 — Undervisnings- og opplæringstjenester": "80000000",
-    "85000000 — Helse og sosiale tjenester": "85000000",
-    "90000000 — Kloakk-, avfalls-, renholds- og miljøtjenester": "90000000",
-    "79000000 — Forretningstjenester": "79000000",
-    "60000000 — Transport": "60000000",
-}
+_ALLE_CPV = alle_oppslag()
 
 NUTS_REGIONER = {
     "Hele Norge": "",
@@ -75,11 +67,17 @@ with st.form("profil_form"):
             "Sertifiseringer (komma-separert)", placeholder="ISO 9001, ISO 14001"
         )
 
-    cpv_valgt = st.multiselect(
-        "CPV-koder (hva tilbyr dere?)",
-        options=list(VANLIGE_CPV.keys()),
-        help="Velg de kategoriene som beskriver dine tjenester",
-    )
+    st.markdown("**CPV-koder (hva tilbyr dere?)**")
+    cpv_valgt: list[str] = []
+    for bransje, koder in CPV_GRUPPER.items():
+        with st.expander(bransje):
+            valgte = st.multiselect(
+                f"Velg fra {bransje}",
+                options=koder,
+                label_visibility="collapsed",
+                key=f"cpv_{bransje}",
+            )
+            cpv_valgt.extend(valgte)
 
     regioner_valgt = st.multiselect(
         "Aktuelle regioner",
@@ -93,7 +91,7 @@ with st.form("profil_form"):
         if not org_nr or not navn:
             st.error("Organisasjonsnummer og firmanavn er obligatorisk.")
         else:
-            cpv_koder = [VANLIGE_CPV[k] for k in cpv_valgt]
+            cpv_koder = [_ALLE_CPV[k] for k in cpv_valgt if k in _ALLE_CPV]
             nuts_regioner = [NUTS_REGIONER[r] for r in regioner_valgt if NUTS_REGIONER[r]]
             sertifiseringer = [
                 s.strip() for s in sertifiseringer_input.split(",") if s.strip()

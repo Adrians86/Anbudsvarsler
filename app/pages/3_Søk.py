@@ -8,43 +8,41 @@ import httpx
 import streamlit as st
 
 from app.config import API_BASE_URL as API_BASE
+from app.cpv_data import CPV_GRUPPER, alle_oppslag
 from app.theme import inject_css, section_header
 
 st.set_page_config(page_title="Søk | Anbudsvarsler", page_icon="🔍", layout="wide")
 inject_css()
 
-VANLIGE_CPV = {
-    "72000000 — IT-tjenester": "72000000",
-    "45000000 — Bygge- og anleggsarbeid": "45000000",
-    "71000000 — Arkitekt-, ingeniør- og planleggingstjenester": "71000000",
-    "80000000 — Undervisnings- og opplæringstjenester": "80000000",
-    "85000000 — Helse og sosiale tjenester": "85000000",
-    "90000000 — Kloakk-, avfalls-, renholds- og miljøtjenester": "90000000",
-    "79000000 — Forretningstjenester": "79000000",
-    "60000000 — Transport": "60000000",
-    "50000000 — Reparasjon og vedlikehold": "50000000",
-    "48000000 — Programvare": "48000000",
-}
+_ALLE_CPV = alle_oppslag()
 
 section_header("🔍 Søk etter kunngjøringer")
 
-col1, col2, col3 = st.columns(3)
-with col1:
-    cpv_valgt = st.multiselect(
-        "Bransje / CPV-kode",
-        options=list(VANLIGE_CPV.keys()),
-        placeholder="Velg én eller flere bransjer...",
-    )
+with st.expander("Filtrer på bransje / CPV-kode", expanded=True):
+    cpv_valgt: list[str] = []
+    cols = st.columns(2)
+    bransjer = list(CPV_GRUPPER.items())
+    for i, (bransje, koder) in enumerate(bransjer):
+        with cols[i % 2]:
+            valgte = st.multiselect(
+                bransje,
+                options=koder,
+                key=f"sok_cpv_{bransje}",
+                placeholder="Velg...",
+            )
+            cpv_valgt.extend(valgte)
+
+col2, col3 = st.columns(2)
 with col2:
     region_soek = st.text_input("NUTS-region", placeholder="NO011")
 with col3:
     fra_dato = st.date_input("Publisert etter", value=None)
 
 if st.button("Søk", type="primary"):
+    valgte_koder = {_ALLE_CPV[k] for k in cpv_valgt if k in _ALLE_CPV}
     params = {}
-    if cpv_valgt:
-        # Send første valgte CPV (API støtter én om gangen — filtrerer lokalt for resten)
-        params["cpv"] = VANLIGE_CPV[cpv_valgt[0]]
+    if valgte_koder:
+        params["cpv"] = next(iter(valgte_koder))
     if region_soek:
         params["region"] = region_soek
     if fra_dato:
@@ -59,9 +57,7 @@ if st.button("Søk", type="primary"):
         st.error(f"Søkefeil ({API_BASE}): {e}")
         kunngjøringer = []
 
-    # Lokal filtrering for ekstra valgte CPV-koder
-    if len(cpv_valgt) > 1:
-        valgte_koder = {VANLIGE_CPV[k] for k in cpv_valgt}
+    if len(valgte_koder) > 1:
         kunngjøringer = [
             k for k in kunngjøringer
             if any(c in valgte_koder for c in k.get("cpv_koder", []))
