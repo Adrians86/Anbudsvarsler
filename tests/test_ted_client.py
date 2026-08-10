@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from leverandor.ingest.ted_client import _map_ted_notice, _parse_ted_date
+from leverandor.ingest.ted_client import _get_multilingual, _map_ted_notice, _parse_ted_date
 
 
 def test_parse_ted_date_yyyymmdd():
@@ -24,38 +24,74 @@ def test_parse_ted_date_none():
     assert _parse_ted_date(None) is None
 
 
+def test_get_multilingual_dict_nor():
+    assert _get_multilingual({"NOR": ["Norsk tittel"], "ENG": ["English title"]}) == "Norsk tittel"
+
+
+def test_get_multilingual_dict_fallback():
+    assert _get_multilingual({"ENG": ["English title"]}) == "English title"
+
+
+def test_get_multilingual_list():
+    assert _get_multilingual(["Tittel"]) == "Tittel"
+
+
+def test_get_multilingual_string():
+    assert _get_multilingual("Direkte tittel") == "Direkte tittel"
+
+
+def test_get_multilingual_empty():
+    assert _get_multilingual({}) == ""
+
+
 def test_map_ted_notice_minimal():
     notice = {
-        "ND-NoticePublicationId": "TED-2026-00001",
-        "ND-NoticeTitle": "Norsk IT-anbud",
-        "ND-CaOfficialName": "Statens vegvesen",
-        "ND-PublicationDate": "20260810",
+        "publication-number": "TED-2026-00001",
+        "notice-title": {"NOR": ["Norsk IT-anbud"], "ENG": ["Norwegian IT tender"]},
+        "buyer-name": {"NOR": ["Statens vegvesen"]},
+        "publication-date": "20260810",
     }
     k = _map_ted_notice(notice)
     assert k.kilde == "TED"
     assert k.ekstern_id == "TED-2026-00001"
     assert k.tittel == "Norsk IT-anbud"
     assert k.oppdragsgiver == "Statens vegvesen"
+    assert k.cpv_koder == []
 
 
-def test_map_ted_notice_title_as_list():
+def test_map_ted_notice_title_as_string():
     notice = {
-        "ND-NoticePublicationId": "TED-2026-00002",
-        "ND-NoticeTitle": ["Renholdstjenester"],
-        "ND-CaOfficialName": "Oslo kommune",
-        "ND-PublicationDate": "20260810",
+        "publication-number": "TED-2026-00002",
+        "notice-title": "Renholdstjenester",
+        "buyer-name": "Oslo kommune",
+        "publication-date": "20260810",
     }
     k = _map_ted_notice(notice)
     assert k.tittel == "Renholdstjenester"
+    assert k.oppdragsgiver == "Oslo kommune"
 
 
 def test_map_ted_notice_cpv():
     notice = {
-        "ND-NoticePublicationId": "TED-2026-00003",
-        "ND-NoticeTitle": "Bygg",
-        "ND-CaOfficialName": "Bergen",
-        "ND-MainCpvCode": "45000000",
-        "ND-PublicationDate": "20260810",
+        "publication-number": "TED-2026-00003",
+        "notice-title": "Bygg",
+        "buyer-name": "Bergen",
+        "classification-cpv": ["45000000", "45100000"],
+        "publication-date": "20260810",
     }
     k = _map_ted_notice(notice)
-    assert k.cpv_koder == ["45000000"]
+    assert k.cpv_koder == ["45000000", "45100000"]
+
+
+def test_map_ted_notice_total_value():
+    from decimal import Decimal
+
+    notice = {
+        "publication-number": "TED-2026-00004",
+        "notice-title": "Test",
+        "buyer-name": "Staten",
+        "total-value": {"amount": 1500000, "currency": "NOK"},
+        "publication-date": "20260810",
+    }
+    k = _map_ted_notice(notice)
+    assert k.estimert_verdi == Decimal("1500000")
