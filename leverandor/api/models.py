@@ -8,11 +8,25 @@ class LeverandorProfil(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     org_nr: str = Field(index=True)
     navn: str
+    # Kontakt
+    kontaktperson: Optional[str] = None
+    epost: Optional[str] = None
+    telefon: Optional[str] = None
+    nettsted: Optional[str] = None
+    # Adresse
+    adresse: Optional[str] = None
+    postnr: Optional[str] = None
+    sted: Optional[str] = None
+    organisasjonsform: Optional[str] = None
+    # Økonomi
+    antall_ansatte: Optional[int] = None
+    aarlig_omsetning_nok: Optional[int] = None
+    # Profil
     cpv_koder: list[str] = Field(default=[], sa_column=Column(JSON))
     nuts_regioner: list[str] = Field(default=[], sa_column=Column(JSON))
     min_verdi: Optional[Decimal] = None
     max_verdi: Optional[Decimal] = None
-    antall_ansatte: Optional[int] = None
+    kontrakt_preferanse: Optional[str] = None  # "rammeavtale" | "enkelt" | "begge"
     sertifiseringer: list[str] = Field(default=[], sa_column=Column(JSON))
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -72,4 +86,33 @@ class Bibliotekelement(SQLModel, table=True):
     tittel: str
     innhold: str = ""
     tags: list[str] = Field(default=[], sa_column=Column(JSON))
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class FirmaDokument(SQLModel, table=True):
+    """Firmadokumenter med utløpsdato — brukt i kvalifikasjonssjekken."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    profil_id: int = Field(foreign_key="leverandorprofil.id")
+    kategori: str   # "skatteattest"|"hms_erklæring"|"firmaattest"|"forsikringsbevis"|"årsregnskap"|"iso_sertifikat"|"hms_kort"|"egenerklæring"|"annet"
+    tittel: str
+    utloep_dato: Optional[datetime] = None
+    lastet_opp: bool = False
+    fil_url: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ReferanseProsjekt(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    profil_id: int = Field(foreign_key="leverandorprofil.id")
+    prosjektnavn: str
+    oppdragsgiver_navn: str
+    oppdragsgiver_org_nr: Optional[str] = None
+    kontraktsverdi_nok: Optional[int] = None
+    periode_fra: Optional[str] = None
+    periode_til: Optional[str] = None
+    cpv: Optional[str] = None
+    beskrivelse: Optional[str] = None
+    kontaktperson: Optional[str] = None
+    kontakttelefon: Optional[str] = None
+    kan_kontaktes: bool = True
     created_at: datetime = Field(default_factory=datetime.utcnow)

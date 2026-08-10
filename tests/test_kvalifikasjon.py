@@ -54,8 +54,16 @@ def test_rule_hits_always_present():
     profil = _profil()
     k = _kunngjoring()
     resultat = sjekk_kvalifikasjon(profil, k)
-    assert len(resultat["rule_hits"]) == 3
-    rule_ids = [r["rule_id"] for r in resultat["rule_hits"]]
-    assert "K1" in rule_ids
-    assert "K2" in rule_ids
-    assert "K3" in rule_ids
+    # Full profil → GO, no issues → rule_hits is empty list
+    assert resultat["resultat"] == "GO"
+    assert isinstance(resultat["rule_hits"], list)
+    assert len(resultat["rule_hits"]) == 0
+
+
+def test_rule_hits_populated_on_issues():
+    profil = _profil(cpv_koder=[])
+    k = _kunngjoring()
+    resultat = sjekk_kvalifikasjon(profil, k)
+    # Missing CPV → rule_hits should contain at least one entry
+    assert len(resultat["rule_hits"]) >= 1
+    assert all("regel" in r and "beskrivelse" in r for r in resultat["rule_hits"])

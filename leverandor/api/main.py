@@ -9,7 +9,7 @@ from sqlmodel import Session, select
 from leverandor.api.database import create_db_and_tables, engine
 from leverandor.api.models import Kunngjoring, LeverandorProfil, Varsling
 from leverandor.api.routers import kunngjoring, kvalifikasjon, profil, varsling
-from leverandor.api.routers import sjekkliste, bibliotek
+from leverandor.api.routers import sjekkliste, bibliotek, dokument, referanse
 from leverandor.api.routers.varsling import score_match
 
 load_dotenv()
@@ -31,6 +31,8 @@ app.include_router(varsling.router)
 app.include_router(kvalifikasjon.router)
 app.include_router(sjekkliste.router)
 app.include_router(bibliotek.router)
+app.include_router(dokument.router)
+app.include_router(referanse.router)
 
 
 @app.get("/health")
