@@ -7,12 +7,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 import httpx
 import streamlit as st
 
+from app.config import API_BASE_URL as API_BASE
 from app.theme import inject_css, resultat_badge, section_header, status_pill
 
 st.set_page_config(page_title="Varsler | Anbudsvarsler", page_icon="🔔", layout="wide")
 inject_css()
-
-API_BASE = os.getenv("API_BASE_URL", "http://localhost:8000")
 
 section_header("🔔 Mine anbudsvarsler")
 

@@ -21,10 +21,6 @@ from app.theme import inject_css, section_header
 inject_css()
 
 
-def get_api_base() -> str:
-    return os.getenv("API_BASE_URL", "http://localhost:8000")
-
-
 st.sidebar.image(
     "https://via.placeholder.com/200x60/0A1F44/C9A84C?text=Anbudsvarsler",
     use_container_width=True,
