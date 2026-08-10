@@ -13,7 +13,7 @@ from app.theme import inject_css, section_header
 st.set_page_config(page_title="Admin | Anbudsvarsler", page_icon="⚙️", layout="wide")
 inject_css()
 
-section_header("⚙️ Admin og synkronisering")
+section_header("⚙️ Admin og synkronisering", eyebrow="ADMINISTRASJON")
 
 st.markdown(
     "Her kan du manuelt synkronisere kunngjøringer fra Doffin og TED, "

@@ -14,7 +14,7 @@ from app.theme import inject_css, section_header
 st.set_page_config(page_title="Frister | Anbudsvarsler", page_icon="⏰", layout="wide")
 inject_css()
 
-section_header("⏰ Fristmonitor")
+section_header("⏰ Fristmonitor", eyebrow="FRISTMONITOR")
 
 profil_id = st.session_state.get("profil_id")
 if not profil_id:
@@ -51,6 +51,37 @@ def _trafikklys(frist_str: str | None) -> tuple[str, str]:
         return "🟡", f"{dager} dager igjen"
     return "🟢", f"{dager} dager igjen"
 
+
+def _dager_til(frist_str: str | None) -> int | None:
+    if not frist_str:
+        return None
+    try:
+        frist = datetime.fromisoformat(frist_str[:19])
+        return (frist - nå).days
+    except ValueError:
+        return None
+
+
+# ── Bannervarsler for aktive anbudsprosesser ─────────────────────
+AKTIVE_STATUSER = {"INTERESSERT", "GÅR VIDERE", "GÅ VIDERE MED FORBEHOLD"}
+banner_varslinger = [
+    v for v in varslinger
+    if v.get("status", "NY") in AKTIVE_STATUSER and v.get("tilbudsfrist")
+]
+
+for v in sorted(banner_varslinger, key=lambda x: _dager_til(x.get("tilbudsfrist")) or 9999):
+    dager = _dager_til(v.get("tilbudsfrist"))
+    if dager is None or dager < 0:
+        continue
+    tittel = v.get("tittel", "Ukjent anbud")
+    if dager <= 1:
+        st.error(f"🚨 **SISTE SJANSE — {dager} dag igjen:** {tittel}")
+    elif dager <= 3:
+        st.error(f"🔴 **3 dager eller mindre til frist:** {tittel} ({dager} dager igjen)")
+    elif dager <= 7:
+        st.warning(f"🟠 **7 dager til frist:** {tittel} ({dager} dager igjen)")
+    elif dager <= 14:
+        st.info(f"🔵 **14 dager til frist:** {tittel} ({dager} dager igjen)")
 
 # Statistikk-rad
 med_frist = [v for v in varslinger if v.get("tilbudsfrist")]

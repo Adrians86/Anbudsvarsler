@@ -1,19 +1,19 @@
 import streamlit as st
 
-NAVY = "#0A1F44"
-GOLD = "#C9A84C"
-LIGHT_BG = "#F4F6FA"
+NAVY = "#1F3A5F"
+GOLD = "#B08D2E"
+PAPER = "#F4F6F9"
 SUCCESS = "#2ECC71"
-WARNING = "#F39C12"
-DANGER = "#E74C3C"
+WARNING = "#E67E22"
+DANGER = "#C0392B"
 
 STATUS_COLORS = {
     "NY": "#6C757D",
     "SETT": "#17A2B8",
-    "INTERESSERT": "#007BFF",
-    "FORKASTET": "#E74C3C",
-    "LEVERT": "#FFC107",
-    "VUNNET": "#28A745",
+    "INTERESSERT": "#1F3A5F",
+    "FORKASTET": "#C0392B",
+    "LEVERT": "#B08D2E",
+    "VUNNET": "#27AE60",
     "TAPT": "#6C757D",
 }
 
@@ -31,7 +31,12 @@ def inject_css():
         :root {{
             --navy: {NAVY};
             --gold: {GOLD};
-            --light-bg: {LIGHT_BG};
+            --paper: {PAPER};
+        }}
+
+        /* App background */
+        .stApp {{
+            background-color: {PAPER};
         }}
 
         /* Top bar */
@@ -39,41 +44,46 @@ def inject_css():
             background-color: {NAVY} !important;
         }}
 
-        /* Sidebar nav accent */
+        /* Sidebar */
+        [data-testid="stSidebar"] {{
+            background-color: #162d4e;
+        }}
         [data-testid="stSidebarNav"] {{
             border-top: 3px solid {GOLD};
         }}
         [data-testid="stSidebarNav"] a[aria-current="page"] {{
-            background: rgba(201, 168, 76, 0.15);
+            background: rgba(176, 141, 46, 0.18);
             border-left: 3px solid {GOLD};
         }}
 
         /* Headings */
         h1, h2, h3 {{
             color: {NAVY};
+            font-weight: 700;
+        }}
+
+        /* Eyebrow label */
+        .eyebrow {{
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: {GOLD};
+            margin-bottom: 0.1rem;
+            line-height: 1;
         }}
 
         /* Section header bar */
         .section-header {{
-            background: linear-gradient(90deg, {NAVY} 0%, #163264 100%);
+            background: linear-gradient(90deg, {NAVY} 0%, #2a4e7a 100%);
             color: white;
-            padding: 0.6rem 1.2rem;
+            padding: 0.65rem 1.2rem;
             border-radius: 6px;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.4rem;
             font-weight: 700;
             font-size: 1.15rem;
             letter-spacing: 0.01em;
             border-left: 4px solid {GOLD};
-        }}
-
-        /* Eyebrow label above section headers */
-        .eyebrow {{
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: {GOLD};
-            margin-bottom: 0.15rem;
         }}
 
         /* Status pills */
@@ -89,17 +99,19 @@ def inject_css():
         /* GO/NO-GO badges */
         .resultat-badge {{
             display: inline-block;
-            padding: 4px 14px;
+            padding: 4px 16px;
             border-radius: 4px;
             color: white;
             font-weight: 700;
             font-size: 1em;
+            letter-spacing: 0.03em;
         }}
 
-        /* Card containers */
+        /* Card border polish */
         [data-testid="stVerticalBlockBorderWrapper"] {{
             border-radius: 8px !important;
-            border-color: #DDE3ED !important;
+            border-color: #d1d9e6 !important;
+            background: white;
         }}
 
         /* Primary buttons */
@@ -107,15 +119,37 @@ def inject_css():
             background: {NAVY};
             border: none;
             border-bottom: 2px solid {GOLD};
+            color: white;
         }}
         .stButton > button[kind="primary"]:hover {{
-            background: #163264;
+            background: #2a4e7a;
+            border-bottom-color: {GOLD};
         }}
 
-        /* Metric value color */
+        /* Metric value */
         [data-testid="stMetricValue"] {{
             color: {NAVY};
             font-weight: 700;
+        }}
+
+        /* Tabs */
+        .stTabs [data-baseweb="tab-list"] {{
+            gap: 4px;
+            border-bottom: 2px solid {GOLD};
+        }}
+        .stTabs [data-baseweb="tab"] {{
+            color: {NAVY};
+            font-weight: 600;
+        }}
+        .stTabs [aria-selected="true"] {{
+            border-bottom: 3px solid {GOLD} !important;
+            color: {NAVY} !important;
+        }}
+
+        /* Expander headers */
+        [data-testid="stExpander"] summary {{
+            font-weight: 600;
+            color: {NAVY};
         }}
         </style>
         """,

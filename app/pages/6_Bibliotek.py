@@ -13,7 +13,7 @@ from app.theme import inject_css, section_header
 st.set_page_config(page_title="Bibliotek | Anbudsvarsler", page_icon="📚", layout="wide")
 inject_css()
 
-section_header("📚 Innholdsbibliotek")
+section_header("📚 Innholdsbibliotek", eyebrow="INNHOLDSBIBLIOTEK")
 
 profil_id = st.session_state.get("profil_id")
 if not profil_id:

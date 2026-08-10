@@ -13,7 +13,7 @@ from app.theme import inject_css, resultat_badge, section_header, status_pill
 st.set_page_config(page_title="Varsler | Anbudsvarsler", page_icon="🔔", layout="wide")
 inject_css()
 
-section_header("🔔 Mine anbudsvarsler")
+section_header("🔔 Mine anbudsvarsler", eyebrow="MINE VARSLER")
 
 profil_id = st.session_state.get("profil_id")
 if not profil_id:

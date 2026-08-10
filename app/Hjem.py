@@ -27,7 +27,7 @@ st.sidebar.image(
 )
 st.sidebar.markdown("---")
 
-st.title("📋 Anbudsvarsler")
+section_header("📋 Anbudsvarsler", eyebrow="ANBUDSVARSLER")
 st.markdown(
     "AI-drevet verktøy som hjelper private leverandører å finne, kvalifisere og følge opp "
     "offentlige anbud i Norge."

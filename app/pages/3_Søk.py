@@ -16,7 +16,7 @@ inject_css()
 
 _ALLE_CPV = alle_oppslag()
 
-section_header("🔍 Søk etter kunngjøringer")
+section_header("🔍 Søk etter kunngjøringer", eyebrow="SØK I KUNNGJØRINGER")
 
 with st.expander("Filtrer på bransje / CPV-kode", expanded=True):
     cpv_valgt: list[str] = []
