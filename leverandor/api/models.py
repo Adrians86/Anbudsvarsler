@@ -53,3 +53,23 @@ class Kvalifikasjonssjekk(SQLModel, table=True):
     rule_hits: list[dict] = Field(default=[], sa_column=Column(JSON))
     bekreftet_av_bruker: bool = False
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class SjekklisteElement(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    varsling_id: int = Field(foreign_key="varsling.id")
+    profil_id: int = Field(foreign_key="leverandorprofil.id")
+    tekst: str
+    ferdig: bool = False
+    frist: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class Bibliotekelement(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    profil_id: int = Field(foreign_key="leverandorprofil.id")
+    kategori: str                    # "sertifikat" | "årsregnskap" | "referanse" | "mal" | "annet"
+    tittel: str
+    innhold: str = ""
+    tags: list[str] = Field(default=[], sa_column=Column(JSON))
+    created_at: datetime = Field(default_factory=datetime.utcnow)
