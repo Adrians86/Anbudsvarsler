@@ -1,7 +1,9 @@
+import logging
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from sqlmodel import Session, select
 
 from leverandor.api.database import create_db_and_tables, engine
@@ -39,51 +41,69 @@ def manuell_sync():
     from leverandor.ingest.doffin_client import fetch_recent_doffin
     from leverandor.ingest.ted_client import fetch_recent_ted
 
-    doffin = fetch_recent_doffin(days_back=2)
-    ted = fetch_recent_ted(days_back=2)
-    all_notices = doffin + ted
+    try:
+        doffin = fetch_recent_doffin(days_back=2)
+    except Exception:
+        logging.exception("Doffin ingest failed")
+        doffin = []
 
+    try:
+        ted = fetch_recent_ted(days_back=2)
+    except Exception:
+        logging.exception("TED ingest failed")
+        ted = []
+
+    all_notices = doffin + ted
     new_count = 0
     varsler_count = 0
 
-    with Session(engine) as session:
-        for kunngjoring_obj in all_notices:
-            existing = session.exec(
-                select(Kunngjoring).where(
-                    Kunngjoring.ekstern_id == kunngjoring_obj.ekstern_id
-                )
-            ).first()
-            if not existing:
-                session.add(kunngjoring_obj)
-                new_count += 1
-        session.commit()
+    try:
+        with Session(engine) as session:
+            for kunngjoring_obj in all_notices:
+                existing = session.exec(
+                    select(Kunngjoring).where(
+                        Kunngjoring.ekstern_id == kunngjoring_obj.ekstern_id
+                    )
+                ).first()
+                if not existing:
+                    session.add(kunngjoring_obj)
+                    new_count += 1
+            session.commit()
 
-        profiler = session.exec(select(LeverandorProfil)).all()
-        saved = session.exec(select(Kunngjoring)).all()
-        for p in profiler:
-            for k in saved:
-                s = score_match(k, p)
-                if s >= 0.3:
-                    exists = session.exec(
-                        select(Varsling)
-                        .where(Varsling.profil_id == p.id)
-                        .where(Varsling.kunngjoring_id == k.id)
-                    ).first()
-                    if not exists:
-                        cpv_match = list(set(k.cpv_koder) & set(p.cpv_koder))
-                        session.add(
-                            Varsling(
-                                profil_id=p.id,
-                                kunngjoring_id=k.id,
-                                relevans_score=s,
-                                cpv_match=cpv_match,
+            profiler = session.exec(select(LeverandorProfil)).all()
+            saved = session.exec(select(Kunngjoring)).all()
+            for p in profiler:
+                for k in saved:
+                    s = score_match(k, p)
+                    if s >= 0.3:
+                        exists = session.exec(
+                            select(Varsling)
+                            .where(Varsling.profil_id == p.id)
+                            .where(Varsling.kunngjoring_id == k.id)
+                        ).first()
+                        if not exists:
+                            cpv_match = list(set(k.cpv_koder) & set(p.cpv_koder))
+                            session.add(
+                                Varsling(
+                                    profil_id=p.id,
+                                    kunngjoring_id=k.id,
+                                    relevans_score=s,
+                                    cpv_match=cpv_match,
+                                )
                             )
-                        )
-                        varsler_count += 1
-        session.commit()
+                            varsler_count += 1
+            session.commit()
+    except Exception:
+        logging.exception("DB error during sync")
+        return JSONResponse(
+            status_code=500,
+            content={"error": "Database error during sync — check server logs"},
+        )
 
     return {
         "nye_kunngjøringer": new_count,
         "nye_varsler": varsler_count,
         "totalt_hentet": len(all_notices),
+        "doffin": len(doffin),
+        "ted": len(ted),
     }

@@ -42,6 +42,9 @@ def fetch_recent_ted(days_back: int = 2, cpv_codes: list[str] | None = None) -> 
             except httpx.HTTPStatusError as e:
                 logging.warning(f"TED API error {e.response.status_code}: {e.response.text[:500]}")
                 return results
+            except httpx.RequestError as e:
+                logging.warning(f"TED API connection error: {e}")
+                return results
             data = resp.json()
             for notice in data.get("notices", []):
                 results.append(_map_ted_notice(notice))

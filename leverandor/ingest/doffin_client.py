@@ -1,6 +1,7 @@
 import httpx
 import csv
 import io
+import logging
 import os
 from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
@@ -32,8 +33,15 @@ def _fetch_via_api(days_back: int) -> list[Kunngjoring]:
     results = []
     with httpx.Client(timeout=30) as client:
         while True:
-            resp = client.get(DOFFIN_PUBLIC_URL, params=params, headers=headers)
-            resp.raise_for_status()
+            try:
+                resp = client.get(DOFFIN_PUBLIC_URL, params=params, headers=headers)
+                resp.raise_for_status()
+            except httpx.HTTPStatusError as e:
+                logging.warning(f"Doffin API error {e.response.status_code}: {e.response.text[:500]}")
+                return results
+            except httpx.RequestError as e:
+                logging.warning(f"Doffin API connection error: {e}")
+                return results
             data = resp.json()
             for item in data.get("hits", []):
                 results.append(_map_api_item(item))
