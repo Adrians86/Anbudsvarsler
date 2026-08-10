@@ -61,7 +61,7 @@ def _map_api_item(item: dict) -> Kunngjoring:
         cpv_koder=item.get("cpvCodes", []),
         estimert_verdi=estimert_verdi,
         tilbudsfrist=_parse_dt(item.get("deadlineDate")),
-        publisert=_parse_dt(item.get("issueDate")) or datetime.utcnow(),
+        publisert=_parse_dt(item.get("publicationDate")) or datetime.utcnow(),
         url=f"https://doffin.no/Notice/Details/{ekstern_id}",
         raa_data=item,
     )
