@@ -42,6 +42,18 @@ NUTS_REGIONER = {
 
 section_header("🏢 Min leverandørprofil")
 
+# Vis tilkoblingsstatus
+try:
+    with httpx.Client(timeout=5) as _c:
+        _c.get(f"{API_BASE}/health").raise_for_status()
+    st.success(f"Backend tilkoblet: `{API_BASE}`")
+except Exception as _e:
+    st.error(
+        f"**Backend ikke tilgjengelig** (`{API_BASE}`)\n\n"
+        f"Feil: {_e}\n\n"
+        "Sett `API_BASE_URL` i Streamlit Cloud → Settings → Secrets."
+    )
+
 profil_id = st.session_state.get("profil_id")
 if profil_id:
     st.success(f"Innlogget profil ID: {profil_id}")
