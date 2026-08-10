@@ -68,8 +68,11 @@ for v in varsler:
             st.write(f"**Oppdragsgiver:** {k.get('oppdragsgiver', 'Ukjent')}")
             if k.get("tilbudsfrist"):
                 st.write(f"**Tilbudsfrist:** {k['tilbudsfrist'][:10]}")
-            if k.get("estimert_verdi"):
-                st.write(f"**Estimert verdi:** {k['estimert_verdi']:,} NOK")
+            verdi = k.get("estimert_verdi")
+            if verdi:
+                st.write(f"**Estimert verdi:** {verdi:,.0f} NOK".replace(",", " "))
+            else:
+                st.write("**Estimert verdi:** Ikke oppgitt")
             if k.get("cpv_koder"):
                 st.write(f"**CPV-koder:** {', '.join(k['cpv_koder'])}")
             if k.get("url"):
