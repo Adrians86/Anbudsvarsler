@@ -31,9 +31,9 @@ def test_parse_dt_empty_string():
 
 def test_map_api_item_minimal():
     item = {
-        "referenceNumber": "2026-123",
-        "title": "Test kunngjøring",
-        "contractingAuthorityName": "Oslo kommune",
+        "id": "2026-123",
+        "heading": "Test kunngjøring",
+        "buyer": [{"name": "Oslo kommune"}],
     }
     k = _map_api_item(item)
     assert k.ekstern_id == "2026-123"
@@ -45,10 +45,10 @@ def test_map_api_item_minimal():
 
 def test_map_api_item_with_cpv():
     item = {
-        "referenceNumber": "2026-456",
-        "title": "IT-tjenester",
-        "contractingAuthorityName": "Bergen kommune",
-        "cpvCode": "72000000",
+        "id": "2026-456",
+        "heading": "IT-tjenester",
+        "buyer": [{"name": "Bergen kommune"}],
+        "cpvCodes": ["72000000"],
     }
     k = _map_api_item(item)
     assert k.cpv_koder == ["72000000"]

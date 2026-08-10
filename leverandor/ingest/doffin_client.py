@@ -8,7 +8,7 @@ from decimal import Decimal, InvalidOperation
 from leverandor.api.models import Kunngjoring
 
 DOFFIN_API_KEY = os.getenv("DOFFIN_API_KEY", "")
-DOFFIN_PUBLIC_URL = "https://dof-notices-prod-api.developer.azure-api.net/public"
+DOFFIN_PUBLIC_URL = "https://api.doffin.no/public/v2/search"
 
 
 def fetch_recent_doffin(days_back: int = 2) -> list[Kunngjoring]:
@@ -22,11 +22,11 @@ def fetch_recent_doffin(days_back: int = 2) -> list[Kunngjoring]:
 def _fetch_via_api(days_back: int) -> list[Kunngjoring]:
     from_date = (datetime.utcnow() - timedelta(days=days_back)).strftime("%Y-%m-%d")
     params = {
-        "NoticeType": "2",
-        "PublishedFrom": from_date,
-        "IncludeExpired": "false",
-        "PageSize": "100",
-        "Page": "1",
+        "type": "COMPETITION",
+        "status": "ACTIVE",
+        "issueDateFrom": from_date,
+        "numHitsPerPage": "100",
+        "page": "1",
     }
     headers = {"Ocp-Apim-Subscription-Key": DOFFIN_API_KEY}
     results = []
@@ -35,25 +35,34 @@ def _fetch_via_api(days_back: int) -> list[Kunngjoring]:
             resp = client.get(DOFFIN_PUBLIC_URL, params=params, headers=headers)
             resp.raise_for_status()
             data = resp.json()
-            for item in data.get("items", []):
+            for item in data.get("hits", []):
                 results.append(_map_api_item(item))
             if not data.get("hasNextPage"):
                 break
-            params["Page"] = str(int(params["Page"]) + 1)
+            params["page"] = str(int(params["page"]) + 1)
     return results
 
 
 def _map_api_item(item: dict) -> Kunngjoring:
+    buyers = item.get("buyer", [])
+    oppdragsgiver = buyers[0].get("name", "") if buyers else ""
+    estimert_verdi_raw = item.get("estimatedValue", {})
+    estimert_verdi = (
+        _parse_decimal(str(estimert_verdi_raw.get("amount")))
+        if estimert_verdi_raw
+        else None
+    )
+    ekstern_id = str(item.get("id", ""))
     return Kunngjoring(
         kilde="DOFFIN",
-        ekstern_id=item.get("referenceNumber", ""),
-        tittel=item.get("title", ""),
-        oppdragsgiver=item.get("contractingAuthorityName", ""),
-        cpv_koder=[item["cpvCode"]] if item.get("cpvCode") else [],
-        estimert_verdi=item.get("estimatedTotalValue"),
+        ekstern_id=ekstern_id,
+        tittel=item.get("heading", ""),
+        oppdragsgiver=oppdragsgiver,
+        cpv_koder=item.get("cpvCodes", []),
+        estimert_verdi=estimert_verdi,
         tilbudsfrist=_parse_dt(item.get("deadlineDate")),
-        publisert=_parse_dt(item.get("publishedDate")) or datetime.utcnow(),
-        url=f"https://doffin.no/Notice/Details/{item.get('referenceNumber', '')}",
+        publisert=_parse_dt(item.get("issueDate")) or datetime.utcnow(),
+        url=f"https://doffin.no/Notice/Details/{ekstern_id}",
         raa_data=item,
     )
 

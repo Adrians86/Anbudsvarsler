@@ -27,7 +27,7 @@ def get_api_base() -> str:
 
 st.sidebar.image(
     "https://via.placeholder.com/200x60/0A1F44/C9A84C?text=Anbudsvarsler",
-    use_column_width=True,
+    use_container_width=True,
 )
 st.sidebar.markdown("---")
 
