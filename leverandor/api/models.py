@@ -1,6 +1,5 @@
 from sqlmodel import SQLModel, Field, JSON, Column
 from typing import Optional
-from decimal import Decimal
 from datetime import datetime
 
 
@@ -24,8 +23,8 @@ class LeverandorProfil(SQLModel, table=True):
     # Profil
     cpv_koder: list[str] = Field(default=[], sa_column=Column(JSON))
     nuts_regioner: list[str] = Field(default=[], sa_column=Column(JSON))
-    min_verdi: Optional[Decimal] = None
-    max_verdi: Optional[Decimal] = None
+    min_verdi: Optional[float] = None
+    max_verdi: Optional[float] = None
     kontrakt_preferanse: Optional[str] = None  # "rammeavtale" | "enkelt" | "begge"
     sertifiseringer: list[str] = Field(default=[], sa_column=Column(JSON))
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -39,7 +38,7 @@ class Kunngjoring(SQLModel, table=True):
     oppdragsgiver: str
     cpv_koder: list[str] = Field(default=[], sa_column=Column(JSON))
     nuts_region: Optional[str] = None
-    estimert_verdi: Optional[Decimal] = None
+    estimert_verdi: Optional[float] = None
     tilbudsfrist: Optional[datetime] = None
     publisert: datetime
     url: str
