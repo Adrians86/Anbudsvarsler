@@ -210,14 +210,14 @@ with tab2:
             min_verdi = st.number_input(
                 "Min. kontraktsverdi (NOK)",
                 min_value=0,
-                value=int(pd.get("min_verdi") or 0),
+                value=int(float(pd.get("min_verdi") or 0)),
                 step=100_000,
             )
         with col_max:
             max_verdi = st.number_input(
                 "Maks. kontraktsverdi (NOK)",
                 min_value=0,
-                value=int(pd.get("max_verdi") or 0),
+                value=int(float(pd.get("max_verdi") or 0)),
                 step=500_000,
             )
         with col_pref:
@@ -250,9 +250,15 @@ with tab2:
                     with httpx.Client(timeout=10) as client:
                         resp = client.put(f"{API_BASE}/profil/{profil_id}", json=existing)
                         resp.raise_for_status()
-                        st.session_state.profil_data.update({"cpv_koder": cpv_koder, "nuts_regioner": nuts_koder})
-                        st.toast("Bransjeprofil lagret!", icon="✅")
-                        st.rerun()
+                    st.session_state.profil_data.update({
+                        "cpv_koder": cpv_koder,
+                        "nuts_regioner": nuts_koder,
+                        "min_verdi": min_verdi if min_verdi > 0 else None,
+                        "max_verdi": max_verdi if max_verdi > 0 else None,
+                        "kontrakt_preferanse": kontrakt_pref,
+                    })
+                    st.toast("Bransjeprofil lagret!", icon="✅")
+                    st.rerun()
                 except Exception as e:
                     st.error(f"Feil ved lagring: {e}")
 
