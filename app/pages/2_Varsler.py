@@ -20,7 +20,8 @@ if not profil_id:
     st.warning("Du må opprette en profil først. Gå til **Min Profil**.")
     st.stop()
 
-col1, col2, col3 = st.columns(3)
+# ── Filterkontroller ─────────────────────────────────────────────────────────
+col1, col2, col3, col4 = st.columns(4)
 with col1:
     status_filter = st.selectbox(
         "Filtrer på status",
@@ -29,9 +30,18 @@ with col1:
 with col2:
     min_score = st.slider("Minimum relevans-score", 0.0, 1.0, 0.0, 0.1)
 with col3:
+    sort_by = st.selectbox(
+        "Sorter etter",
+        ["Relevans (høy til lav)", "Tilbudsfrist (nærmest først)"],
+    )
+with col4:
     if st.button("Oppdater liste"):
+        # Tøm kunngjørings- og sjekk-cache slik at ny data hentes
+        for _k in ("_kunngjoring_bulk", "_sjekk_map"):
+            st.session_state.pop(_k, None)
         st.rerun()
 
+# ── Hent varsler ─────────────────────────────────────────────────────────────
 try:
     with httpx.Client(timeout=10) as client:
         resp = client.get(f"{API_BASE}/varsling", params={"profil_id": profil_id})
@@ -49,16 +59,54 @@ if not varsler:
     st.info("Ingen varsler funnet. Kjør en synkronisering fra Admin-siden.")
     st.stop()
 
-st.write(f"Viser **{len(varsler)}** varsler")
+# ── Bulk-hent alle kunngjøringer (unngår N+1) ────────────────────────────────
+if "_kunngjoring_bulk" not in st.session_state:
+    try:
+        with httpx.Client(timeout=15) as client:
+            k_resp = client.get(f"{API_BASE}/kunngjoring")
+            k_resp.raise_for_status()
+            st.session_state["_kunngjoring_bulk"] = {
+                k["id"]: k for k in k_resp.json()
+            }
+    except Exception as e:
+        st.warning(f"Kunne ikke laste kunngjøringsdetaljer: {e}")
+        st.session_state["_kunngjoring_bulk"] = {}
 
-for v in varsler:
-    kunngjoring_id = v["kunngjoring_id"]
+alle_kunngjøringer: dict = st.session_state["_kunngjoring_bulk"]
+
+# ── Hent alle kvalifikasjonssjekker for profilen (siste per varsling) ─────────
+if "_sjekk_map" not in st.session_state:
+    sjekk_map: dict = {}
     try:
         with httpx.Client(timeout=10) as client:
-            k_resp = client.get(f"{API_BASE}/kunngjoring/{kunngjoring_id}")
-            k = k_resp.json() if k_resp.status_code == 200 else {}
+            s_resp = client.get(
+                f"{API_BASE}/kvalifikasjon", params={"profil_id": profil_id}
+            )
+            if s_resp.status_code == 200:
+                for s in s_resp.json():
+                    vid = s["varsling_id"]
+                    if vid not in sjekk_map:          # siste sjekk (API returnerer nyeste først)
+                        sjekk_map[vid] = s
     except Exception:
-        k = {}
+        pass
+    st.session_state["_sjekk_map"] = sjekk_map
+else:
+    sjekk_map = st.session_state["_sjekk_map"]
+
+# ── Sortering ─────────────────────────────────────────────────────────────────
+if sort_by == "Tilbudsfrist (nærmest først)":
+    def _frist_key(v: dict) -> str:
+        k = alle_kunngjøringer.get(v["kunngjoring_id"], {})
+        return k.get("tilbudsfrist") or "9999-99-99"
+
+    varsler = sorted(varsler, key=_frist_key)
+# Else: API returnerer allerede sortert etter relevans_score DESC
+
+st.write(f"Viser **{len(varsler)}** varsler")
+
+# ── Varslingskort ─────────────────────────────────────────────────────────────
+for v in varsler:
+    k = alle_kunngjøringer.get(v["kunngjoring_id"], {})
 
     with st.expander(
         f"📄 {k.get('tittel', 'Ukjent')} — Score: {v['relevans_score']:.2f}"
@@ -69,8 +117,11 @@ for v in varsler:
             if k.get("tilbudsfrist"):
                 st.write(f"**Tilbudsfrist:** {k['tilbudsfrist'][:10]}")
             verdi = k.get("estimert_verdi")
-            if verdi:
-                st.write(f"**Estimert verdi:** {verdi:,.0f} NOK".replace(",", " "))
+            if verdi is not None:
+                try:
+                    st.write(f"**Estimert verdi:** {float(verdi):,.0f} NOK".replace(",", " "))
+                except (ValueError, TypeError):
+                    st.write(f"**Estimert verdi:** {verdi}")
             else:
                 st.write("**Estimert verdi:** Ikke oppgitt")
             if k.get("cpv_koder"):
@@ -80,6 +131,12 @@ for v in varsler:
 
         with col2:
             st.markdown(status_pill(v["status"]), unsafe_allow_html=True)
+
+            # Vis siste kvalifikasjonsresultat om det finnes
+            if v["id"] in sjekk_map:
+                siste = sjekk_map[v["id"]]
+                st.markdown(resultat_badge(siste["resultat"]), unsafe_allow_html=True)
+
             st.write(f"Relevans: **{v['relevans_score']:.0%}**")
 
             ny_status = st.selectbox(
@@ -110,10 +167,13 @@ for v in varsler:
                             json={"varsling_id": v["id"], "profil_id": profil_id},
                         )
                         kval = kval_resp.json()
+                    # Oppdater sjekk-cache for denne varslingen
+                    st.session_state["_sjekk_map"][v["id"]] = kval
                     st.markdown(
                         resultat_badge(kval["resultat"]), unsafe_allow_html=True
                     )
-                    if kval["mangler"]:
+                    if kval.get("mangler"):
                         st.warning("Mangler: " + ", ".join(kval["mangler"]))
+                    st.rerun()
                 except Exception as e:
                     st.error(f"Feil: {e}")
