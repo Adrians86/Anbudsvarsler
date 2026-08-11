@@ -1,5 +1,7 @@
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
@@ -157,6 +159,23 @@ def sjekk_kvalifikasjon(
         "diskvalifiserende": diskval,
         "rule_hits": rule_hits,
     }
+
+
+@router.get("", response_model=list[Kvalifikasjonssjekk])
+def list_sjekker(
+    varsling_id: Optional[int] = Query(None, description="Filtrer på varsling ID"),
+    profil_id: Optional[int] = Query(None, description="Filtrer på profil ID"),
+    session: Session = Depends(get_session),
+):
+    """Hent alle kvalifikasjonssjekker, valgfritt filtrert på varsling eller profil."""
+    stmt = select(Kvalifikasjonssjekk)
+    if varsling_id is not None:
+        stmt = stmt.where(Kvalifikasjonssjekk.varsling_id == varsling_id)
+    if profil_id is not None:
+        stmt = stmt.where(Kvalifikasjonssjekk.profil_id == profil_id)
+    # Siste sjekk øverst
+    stmt = stmt.order_by(Kvalifikasjonssjekk.created_at.desc())  # type: ignore[union-attr]
+    return session.exec(stmt).all()
 
 
 class KvalifikasjonRequest(BaseModel):
