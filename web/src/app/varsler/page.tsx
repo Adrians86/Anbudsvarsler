@@ -133,7 +133,7 @@ export default function VarslerPage() {
       <div>
         <SectionHeader eyebrow="MINE VARSLER" title="🔔 Mine anbudsvarsler" />
         <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4 text-sm">
-          Du må velge en leverandørprofil. Profil-ID lagres i localStorage under &quot;profil_id&quot;.
+          Du må velge en leverandørprofil. Profil-ID lagres i sessionStorage under &quot;profil_id&quot;.
           Sett den via utviklerverktøy eller kontakt administrator.
         </div>
       </div>

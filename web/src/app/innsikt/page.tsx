@@ -143,7 +143,7 @@ export default function InnsiktPage() {
 
       {!profilId && (
         <div className="mb-6 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg p-4 text-sm">
-          For profilspesifikk statistikk, sett en leverandørprofil (profil_id i localStorage).
+          For profilspesifikk statistikk, sett en leverandørprofil (profil_id i sessionStorage).
         </div>
       )}
 
