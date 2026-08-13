@@ -151,7 +151,7 @@ export default function KvalifikasjonPage() {
       <div>
         <SectionHeader eyebrow="KVALIFIKASJONSSJEKK" title="✅ Kvalifikasjonssjekk" />
         <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4 text-sm">
-          Ingen profil valgt. Sett profil_id i sessionStorage.
+          Ingen profil valgt. Gå til <a href="/profil" className="underline font-medium">Min Profil</a> for å opprette en profil.
         </div>
       </div>
     )

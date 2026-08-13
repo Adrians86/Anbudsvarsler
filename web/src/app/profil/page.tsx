@@ -652,7 +652,7 @@ export default function ProfilPage() {
               </button>
               {!profilId && (
                 <p className="text-xs text-gray-400">
-                  Lagring oppretter en ny profil og setter Profil-ID i sessionStorage.
+                  Lagring oppretter en ny profil som huskes i denne nettleserøkten.
                 </p>
               )}
             </div>

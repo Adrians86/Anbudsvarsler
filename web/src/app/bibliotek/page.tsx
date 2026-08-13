@@ -120,7 +120,7 @@ export default function BibliotekPage() {
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
           {!profilId ? (
             <p className="text-sm text-gray-500">
-              Sett profil_id i sessionStorage for å se dokumenter.
+              Gå til <a href="/profil" className="underline font-medium">Min Profil</a> for å opprette en profil.
             </p>
           ) : loading ? (
             <p className="text-sm text-gray-500 animate-pulse">Laster dokumenter...</p>
