@@ -1,8 +1,10 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlmodel import Session, select
 
@@ -24,6 +26,20 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Anbudsvarsler API", version=VERSION, lifespan=lifespan)
+
+_raw = os.getenv(
+    "CORS_ORIGINS",
+    "https://anbudsvarsler.netlify.app,http://localhost:3000,http://localhost:8501",
+)
+_origins = [o.strip() for o in _raw.split(",") if o.strip()]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(profil.router)
 app.include_router(kunngjoring.router)
