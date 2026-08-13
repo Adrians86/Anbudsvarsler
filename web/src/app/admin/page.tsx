@@ -175,7 +175,7 @@ export default function AdminPage() {
             </li>
             <li>
               <code className="bg-gray-100 px-1 rounded">NEXT_PUBLIC_API_URL</code> — Pek på
-              backend-URL (standard: http://localhost:8000)
+              backend-URL (standard: https://anbudsvarsler.onrender.com)
             </li>
           </ul>
           <p className="mt-3 text-xs">
