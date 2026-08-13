@@ -91,3 +91,41 @@ export function cpvKode(s: string): string {
 export function alleCpvStrings(): string[] {
   return Object.values(CPV_GRUPPER).flat()
 }
+
+export const SERTIFISERINGER_LISTE: string[] = [
+  'ISO 9001 (kvalitetsstyring)',
+  'ISO 14001 (miljøstyring)',
+  'ISO 27001 (informasjonssikkerhet)',
+  'Miljøfyrtørn',
+  'HMS-kort (Arbeidstilsynet)',
+  'Startbank-godkjent',
+  'Achilles-registrert',
+  'Stami-godkjent',
+  'GDPR-samsvar dokumentert',
+]
+
+export const DOKUMENT_KATEGORIER: Record<string, string> = {
+  hms_erklæring: 'HMS-erklæring (§5 HMS-forskriften)',
+  skatteattest: 'Skatteattester (Skatteetaten + kommunen)',
+  firmaattest: 'Firmaattest fra Brønnøysund',
+  forsikringsbevis: 'Forsikringsbevis',
+  årsregnskap: 'Årsregnskap (siste 2 år)',
+  iso_sertifikat: 'ISO-sertifikat',
+  hms_kort: 'HMS-kort',
+  egenerklæring: 'Etisk egenerklæring',
+  egenerklæring_russland: 'Egenerklæring russiske selskaper (FOA §24-2)',
+  annet: 'Annet dokument',
+}
+
+export const DOKUMENT_UTLOEP_MÅNEDER: Record<string, number | null> = {
+  skatteattest: 6,
+  firmaattest: 3,
+  forsikringsbevis: 12,
+  årsregnskap: 24,
+  iso_sertifikat: 36,
+  hms_kort: 24,
+  hms_erklæring: null,
+  egenerklæring: null,
+  egenerklæring_russland: null,
+  annet: null,
+}

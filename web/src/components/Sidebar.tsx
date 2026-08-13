@@ -6,6 +6,7 @@ import clsx from 'clsx'
 
 const navItems = [
   { href: '/', label: 'Hjem', icon: '🏠' },
+  { href: '/profil', label: 'Min Profil', icon: '🏢' },
   { href: '/varsler', label: 'Mine Varsler', icon: '🔔' },
   { href: '/sok', label: 'Søk', icon: '🔍' },
   { href: '/kvalifikasjon', label: 'Kvalifikasjon', icon: '✅' },

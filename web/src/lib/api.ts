@@ -7,6 +7,7 @@ import type {
   HealthResponse,
   SyncResponse,
   FirmaDokument,
+  ReferanseProsjekt,
 } from './types'
 
 const API_BASE =
@@ -123,6 +124,50 @@ export async function runKvalifikasjon(
 
 export async function fetchDokumenter(profilId: number): Promise<FirmaDokument[]> {
   return apiFetch<FirmaDokument[]>(`/dokument/${profilId}`)
+}
+
+// ── Dokumenter (write) ────────────────────────────────────────────────────────
+
+export async function createDokument(
+  data: Partial<FirmaDokument>
+): Promise<FirmaDokument> {
+  return apiFetch<FirmaDokument>('/dokument', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function updateDokument(
+  dokId: number,
+  data: Partial<FirmaDokument>
+): Promise<FirmaDokument> {
+  return apiFetch<FirmaDokument>(`/dokument/${dokId}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function deleteDokument(dokId: number): Promise<void> {
+  await apiFetch<unknown>(`/dokument/${dokId}`, { method: 'DELETE' })
+}
+
+// ── Referanser ────────────────────────────────────────────────────────────────
+
+export async function fetchReferanser(profilId: number): Promise<ReferanseProsjekt[]> {
+  return apiFetch<ReferanseProsjekt[]>(`/referanse/${profilId}`)
+}
+
+export async function createReferanse(
+  data: Partial<ReferanseProsjekt>
+): Promise<ReferanseProsjekt> {
+  return apiFetch<ReferanseProsjekt>('/referanse', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+export async function deleteReferanse(refId: number): Promise<void> {
+  await apiFetch<unknown>(`/referanse/${refId}`, { method: 'DELETE' })
 }
 
 // ── Admin / Sync ──────────────────────────────────────────────────────────────

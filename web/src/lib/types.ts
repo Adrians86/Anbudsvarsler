@@ -95,9 +95,26 @@ export interface Bibliotekelement {
 export interface FirmaDokument {
   id: number
   profil_id: number
-  navn: string
+  navn?: string
+  tittel?: string
   kategori: string
   lastet_opp: boolean
   utloep_dato?: string
   created_at?: string
+}
+
+export interface ReferanseProsjekt {
+  id: number
+  profil_id: number
+  prosjektnavn: string
+  oppdragsgiver_navn: string
+  oppdragsgiver_org_nr?: string
+  kontraktsverdi_nok?: number
+  periode_fra?: string
+  periode_til?: string
+  cpv?: string
+  beskrivelse?: string
+  kontaktperson?: string
+  kontakttelefon?: string
+  kan_kontaktes?: boolean
 }
