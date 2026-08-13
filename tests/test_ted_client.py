@@ -24,8 +24,19 @@ def test_parse_ted_date_none():
     assert _parse_ted_date(None) is None
 
 
-def test_get_multilingual_dict_nor():
-    assert _get_multilingual({"NOR": ["Norsk tittel"], "ENG": ["English title"]}) == "Norsk tittel"
+def test_get_multilingual_dict_eng_priority():
+    # ENG has highest priority — returned even when NOR is present
+    assert _get_multilingual({"NOR": ["Norsk tittel"], "ENG": ["English title"]}) == "English title"
+
+
+def test_get_multilingual_dict_nor_fallback():
+    # NOR used when ENG is absent
+    assert _get_multilingual({"NOR": ["Norsk tittel"], "FRA": ["Titre français"]}) == "Norsk tittel"
+
+
+def test_get_multilingual_dict_nob_fallback():
+    # NOB used when ENG and NOR are absent
+    assert _get_multilingual({"NOB": ["Bokmål tittel"], "FRA": ["Titre"]}) == "Bokmål tittel"
 
 
 def test_get_multilingual_dict_fallback():
@@ -54,7 +65,7 @@ def test_map_ted_notice_minimal():
     k = _map_ted_notice(notice)
     assert k.kilde == "TED"
     assert k.ekstern_id == "TED-2026-00001"
-    assert k.tittel == "Norsk IT-anbud"
+    assert k.tittel == "Norwegian IT tender"  # ENG prioritized over NOR
     assert k.oppdragsgiver == "Statens vegvesen"
     assert k.cpv_koder == []
 

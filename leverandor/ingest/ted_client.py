@@ -49,12 +49,16 @@ def fetch_recent_ted(days_back: int = 2, cpv_codes: list[str] | None = None) -> 
         return [_map_ted_notice(n) for n in notices]
 
 
-def _get_multilingual(val, lang: str = "NOR") -> str:
-    """Hent tekst fra flerspråklig TED-felt (dict, liste eller streng)."""
+def _get_multilingual(val, langs: tuple[str, ...] = ("ENG", "NOR", "NOB")) -> str:
+    """Hent tekst fra flerspråklig TED-felt.
+
+    Prøver languages i prioritert rekkefølge; faller tilbake til første
+    tilgjengelige språk hvis ingen av preferansene finnes.
+    """
     if isinstance(val, dict):
-        for try_lang in (lang, "ENG", "FRA"):
-            if try_lang in val:
-                v = val[try_lang]
+        for lang in langs:
+            if lang in val:
+                v = val[lang]
                 return v[0] if isinstance(v, list) else str(v)
         first = next(iter(val.values()), "")
         return first[0] if isinstance(first, list) else str(first)
