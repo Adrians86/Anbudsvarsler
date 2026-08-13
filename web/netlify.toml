@@ -7,4 +7,4 @@
   package = "@netlify/plugin-nextjs"
 
 [build.environment]
-  NEXT_PUBLIC_API_URL = "https://your-api.example.com"
+  NEXT_PUBLIC_API_URL = "https://anbudsvarsler.onrender.com"

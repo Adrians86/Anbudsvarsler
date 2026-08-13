@@ -11,7 +11,7 @@ import type {
 } from './types'
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
+  process.env.NEXT_PUBLIC_API_URL ?? 'https://anbudsvarsler.onrender.com'
 
 async function apiFetch<T>(
   path: string,
