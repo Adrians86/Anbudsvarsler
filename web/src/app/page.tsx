@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import SectionHeader from '@/components/SectionHeader'
 import MetricCard from '@/components/MetricCard'
-import { fetchHealth, fetchKunngjøringer } from '@/lib/api'
+import { fetchHealth, fetchKunngjøringer, triggerSync } from '@/lib/api'
 import type { HealthResponse } from '@/lib/types'
 
 export default function HjemPage() {
@@ -11,6 +11,8 @@ export default function HjemPage() {
   const [healthError, setHealthError] = useState(false)
   const [kunngjøringerCount, setKunngjøringerCount] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
+  const [syncing, setSyncing] = useState(false)
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -30,6 +32,22 @@ export default function HjemPage() {
     }
     load()
   }, [])
+
+  async function handleSync() {
+    setSyncing(true)
+    setToast(null)
+    try {
+      const result = await triggerSync()
+      const k = await fetchKunngjøringer()
+      setKunngjøringerCount(k.length)
+      setToast({ type: 'success', message: `Synkronisert: ${result.nye_kunngjøringer} nye kunngjøringer` })
+    } catch (e) {
+      setToast({ type: 'error', message: e instanceof Error ? e.message : 'Synkroniseringsfeil' })
+    } finally {
+      setSyncing(false)
+      setTimeout(() => setToast(null), 5000)
+    }
+  }
 
   return (
     <div>
@@ -76,6 +94,29 @@ export default function HjemPage() {
           sub="Automatisk synkronisering"
           icon="🔄"
         />
+      </div>
+
+      {/* Sync button + toast */}
+      <div className="flex items-center gap-4 mb-6">
+        <button
+          onClick={handleSync}
+          disabled={syncing}
+          className="px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-60"
+          style={{ background: '#1F3A5F', color: '#fff' }}
+        >
+          {syncing ? 'Oppdaterer...' : '🔄 Oppdater kunngjøringer'}
+        </button>
+        {toast && (
+          <span
+            className={`text-sm px-3 py-1 rounded-lg border ${
+              toast.type === 'success'
+                ? 'bg-green-50 border-green-200 text-green-700'
+                : 'bg-red-50 border-red-200 text-red-700'
+            }`}
+          >
+            {toast.message}
+          </span>
+        )}
       </div>
 
       {/* Quick links */}
