@@ -55,6 +55,16 @@ def test_get_multilingual_empty():
     assert _get_multilingual({}) == ""
 
 
+def test_get_multilingual_lowercase_keys():
+    # TED v3 may return lowercase ISO codes — must still prioritize ENG
+    assert _get_multilingual({"nor": ["Norsk tittel"], "eng": ["English title"]}) == "English title"
+
+
+def test_get_multilingual_mul_fallback():
+    # MUL (multilingual) used when ENG/NOR/NOB absent
+    assert _get_multilingual({"MUL": ["Multilingual tittel"]}) == "Multilingual tittel"
+
+
 def test_map_ted_notice_minimal():
     notice = {
         "publication-number": "TED-2026-00001",
